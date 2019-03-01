@@ -15,7 +15,7 @@ CouchDatabase >> compact [
 { #category : #'api - documents' }
 CouchDatabase >> create: anObject [
 	| response |
-	response := self class post: address contents: (CouchDocument with: anObject).
+	response := self class post: address contents: anObject.
 	^CouchDocument new
 		address: address / (response at: 'id');
 		revision: (response at: 'rev');

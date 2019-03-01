@@ -43,7 +43,7 @@ CouchView >> name: anObject [
 { #category : #private }
 CouchView >> searchResults: results [
 	^(results at: 'rows') collect: [:row |
-		CouchDocument new
+		CouchObjectDocument new
 			address: address, (row at: 'id');
 			object: (row at: 'value') couchToObject;
 			yourself]

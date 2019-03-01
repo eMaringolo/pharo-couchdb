@@ -44,7 +44,7 @@ CouchObject class >> post: uri contents: anObject [
 		request: [ :client | 
 			client
 				url: uri;
-				contents:  (NeoJSONWriter toString: anObject);
+				contents: anObject couchJson;
 				contentType: ZnMimeType applicationJson;
 				post ]
 ]
@@ -64,7 +64,7 @@ CouchObject class >> put: uri contents: anObject [
 		request: [ :client | 
 			client
 				url: uri;
-				contentWriter: [ :data | ZnEntity json: (NeoJSONWriter toString: data) ];
+				contentWriter: [ :data | ZnEntity json: data couchJson ];
 				contents: anObject;
 				put ]
 ]
@@ -75,15 +75,10 @@ CouchObject class >> request: aBlock [
 	client := ZnClient new
 		beOneShot;
 		accept: ZnMimeType applicationJson;
-		contentReader: [ :entity | 
-			(NeoJSONReader on: entity readStream)
-				mapClass: NeoJSONObject;
-				next ].
+		contentReader: [ :entity | NeoJSONReader fromString: entity readStream ].
 	^ [ response := aBlock value: client.
-	(response isArray not
-		and: [ response includesKey: 'error' ])
-		ifTrue: [ CouchDBError new
-				signal: (response at: 'reason') ]
+	(response isArray not and: [ response includesKey: 'error' ])
+		ifTrue: [ CouchDBError new signal: (response at: 'reason') ]
 		ifFalse: [ response ] ]
 		on: ZnHttpUnsuccessful
 		do: [ :ex | CouchDBError new signal: ex description ]
