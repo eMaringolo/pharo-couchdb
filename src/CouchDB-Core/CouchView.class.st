@@ -27,7 +27,7 @@ CouchView >> design: anObject [
 CouchView >> documents [
 
 	^self searchResults: (self client
-				get: self address , '_design/' , (design , '/') , '_view/' , name)
+				get: self url , '_design/' , (design , '/') , '_view/' , name)
 ]
 
 { #category : #accessing }
@@ -44,7 +44,7 @@ CouchView >> name: anObject [
 CouchView >> searchResults: results [
 	^(results at: 'rows') collect: [:row |
 		CouchDocument new
-			address: address / (row at: 'id');
+			url: url / (row at: 'id');
 			object: (row at: 'value') couchToObject;
 			yourself]
 ]

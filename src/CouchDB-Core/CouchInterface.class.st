@@ -13,35 +13,35 @@ Class {
 
 { #category : #api }
 CouchInterface >> create: databaseName [
-	^self class put: address / databaseName
+	^self class put: url / databaseName
 ]
 
 { #category : #api }
 CouchInterface >> database: databaseName [
 
 	^(CouchDatabase new)
-		address: self address / databaseName;
+		url: self url / databaseName;
 		yourself
 ]
 
 { #category : #api }
 CouchInterface >> databases [
-	^(self class get: self address / '_all_dbs') collect: [:each | self database: each]
+	^(self class get: self url / '_all_dbs') collect: [:each | self database: each]
 ]
 
 { #category : #api }
 CouchInterface >> delete: databaseName [
-	^self class delete: self address / databaseName
+	^self class delete: self url / databaseName
 ]
 
 { #category : #api }
 CouchInterface >> deleteDatabase: databaseName [
 
-	^self class delete: self address, '/', databaseName
+	^self class delete: self url, '/', databaseName
 ]
 
 { #category : #'initialize-release' }
 CouchInterface >> initialize [
 	super initialize.
-	address := 'http://127.0.0.1:5984/' asZnUrl
+	url := 'http://127.0.0.1:5984/' asZnUrl
 ]

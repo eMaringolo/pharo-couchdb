@@ -19,7 +19,7 @@ CouchDocument class >> with: anObject [
 { #category : #accessing }
 CouchDocument >> attachments [
 
-	^attachments ifNil: [ attachments := OrderedCollection new ].
+	^attachments ifNil: [ attachments := Dictionary new ].
 	
 ]
 
@@ -43,7 +43,7 @@ CouchDocument >> couchWriteOn: aStream [
 CouchDocument >> delete [
 	| response |
 	revision ifNil: [self refresh].
-	response := self class delete: (address copy queryAt: 'rev' put: revision).
+	response := self class delete: (url copy queryAt: 'rev' put: revision).
 	revision := response at: 'rev'.
 	^response
 ]
@@ -59,13 +59,34 @@ CouchDocument >> deleteAttachement: aCouchAttachment [
 
 { #category : #accessing }
 CouchDocument >> id [
-	^ self address ifNotNil: [ :obj | obj lastPathSegment ]
+	^ self url ifNotNil: [ :obj | obj lastPathSegment ]
 ]
 
 { #category : #'initialize-release' }
 CouchDocument >> initialize [
 	super initialize.
 	object := self undefined
+]
+
+{ #category : #api }
+CouchDocument >> initializeAttachmentNamed: filename from: aDictionary [
+	| attachment isStub |
+	isStub := aDictionary at: 'stub' ifAbsent: [ true ].
+	isStub
+		ifTrue: [ attachment := CouchAttachmentStub
+				name: filename
+				mimeType: (aDictionary at: 'content_type')
+				in: self.
+			attachment
+				revision: (aDictionary at: 'revpos');
+				length: (aDictionary at: 'length');
+				digest: (aDictionary at: 'digest') ]
+		ifFalse: [ attachment := CouchAttachment
+				name: filename
+				mimeType: (aDictionary at: 'content_type')
+				in: self.
+				attachment contents: (ZnBase64Encoder new decode: (aDictionary at: 'data') ) ].
+	attachments at: filename put: attachment
 ]
 
 { #category : #accessing }
@@ -91,13 +112,13 @@ CouchDocument >> printOn: aStream [
 CouchDocument >> refresh [
 	" Update this Document to the latest revision "
 	| response |
-	response := self information.
+	response := self rawData.
 	revision := response at: '_rev'.
 	attachments := Dictionary new.
 	(response includesKey: '_attachments')
 		ifTrue: [ 
 			 (response at: '_attachments') keysAndValuesDo: [ :key :value |
-				attachments at: key put: value 
+				self initializeAttachmentNamed: key from: value 
 				 ]
 			].
 					
@@ -117,13 +138,13 @@ CouchDocument >> revision: anObject [
 
 { #category : #api }
 CouchDocument >> revisions [
-	^(self class get: (address copy query: 'revs_info=true')) at: '_revs_info' ifAbsent: [#()]
+	^(self class get: (url copy query: 'revs_info=true')) at: '_revs_info' ifAbsent: [#()]
 ]
 
 { #category : #api }
 CouchDocument >> save [
 	| response |
-	response := self class put: address contents: self.
+	response := self class put: url contents: self.
 	revision := response at: 'rev'.
 	^response
 ]
@@ -133,9 +154,19 @@ CouchDocument >> saveAttachment: aCouchAttachment [
 	| response |
 	revision ifNil: [self refresh].
 	response := CouchAttachment save: aCouchAttachment.
-	1 halt.
 	revision := response at: '_rev'.
 	^response
+]
+
+{ #category : #attachments }
+CouchDocument >> saveAttachmentNamed: filename mimeType: mimeType contents: aByteArray [
+	| attachment |
+	attachment := CouchAttachment
+		name: filename
+		mimeType: mimeType
+		in: self.
+	attachment contents: aByteArray.
+	^ self saveAttachment: attachment
 ]
 
 { #category : #'initialize-release' }

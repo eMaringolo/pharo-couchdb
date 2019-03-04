@@ -9,15 +9,15 @@ Class {
 
 { #category : #'api - database' }
 CouchDatabase >> compact [
-	^self class post: address, '_compact'
+	^self class post: url, '_compact'
 ]
 
 { #category : #'api - documents' }
 CouchDatabase >> create: anObject [
 	| response |
-	response := self class post: address contents: anObject.
+	response := self class post: url contents: anObject.
 	^CouchDocument new
-		address: address / (response at: 'id');
+		url: url / (response at: 'id');
 		revision: (response at: 'rev');
 		object: anObject;
 		yourself
@@ -30,7 +30,7 @@ CouchDatabase >> createAll: aCollectionOfObjects [
 	saveAll := (Dictionary new)
 				at: 'docs' put: aCollectionOfObjects;
 				yourself.
-	response := self class post: address , '_bulk_docs' contents: saveAll.
+	response := self class post: url , '_bulk_docs' contents: saveAll.
 	documents := OrderedCollection new.
 	response with: aCollectionOfObjects
 		do: 
@@ -46,13 +46,13 @@ CouchDatabase >> createAll: aCollectionOfObjects [
 
 { #category : #'api - querying' }
 CouchDatabase >> delete [
-	^self class delete: self address
+	^self class delete: self url
 ]
 
 { #category : #'api - views' }
 CouchDatabase >> design: designName view: viewName [
 	^CouchView new
-		address: address;
+		url: url;
 		design: designName;
 		name: viewName;
 		yourself
@@ -66,64 +66,64 @@ CouchDatabase >> document: id [
 { #category : #'api - documents' }
 CouchDatabase >> document: id revision: revision [
 	^CouchDocument new
-		address: address / id;
+		url: url / id;
 		revision: revision;
 		yourself
 ]
 
 { #category : #'api - querying' }
 CouchDatabase >> documents [
-	^self searchResults: (self class get: address / '_all_docs')
+	^self searchResults: (self class get: url / '_all_docs')
 ]
 
 { #category : #'api - querying' }
 CouchDatabase >> documentsCount: count [
-	^self searchResults: (self class get: address, ('_all_docs?count=', count))
+	^self searchResults: (self class get: url, ('_all_docs?count=', count))
 ]
 
 { #category : #'api - querying' }
 CouchDatabase >> documentsFrom: start [
-	^self searchResults: (self class get: address, ('_all_docs?startkey=', start))
+	^self searchResults: (self class get: url, ('_all_docs?startkey=', start))
 ]
 
 { #category : #'api - querying' }
 CouchDatabase >> documentsFrom: start count: count [
-	^self searchResults: (self class get: address, ('_all_docs?startkey=', start, '&count=', count))
+	^self searchResults: (self class get: url, ('_all_docs?startkey=', start, '&count=', count))
 ]
 
 { #category : #'api - querying' }
 CouchDatabase >> documentsFrom: start to: end [
-	^self searchResults: (self class get: address, ('_all_docs?startkey=', start, '&endkey=', end))
+	^self searchResults: (self class get: url, ('_all_docs?startkey=', start, '&endkey=', end))
 ]
 
 { #category : #'api - database' }
 CouchDatabase >> name [
-	^self information at: 'db_name'
+	^self rawData at: 'db_name'
 ]
 
 { #category : #'api - querying' }
 CouchDatabase >> reverseDocuments [
-	^self searchResults: (self class get: address, '_all_docs?descending=true')
+	^self searchResults: (self class get: url, '_all_docs?descending=true')
 ]
 
 { #category : #'api - querying' }
 CouchDatabase >> reverseDocumentsCount: count [
-	^self searchResults: (self class get: address, ('_all_docs?descending=true&count=', count))
+	^self searchResults: (self class get: url, ('_all_docs?descending=true&count=', count))
 ]
 
 { #category : #'api - querying' }
 CouchDatabase >> reverseDocumentsFrom: start [
-	^self searchResults: (self class get: address, ('_all_docs?descending=true&startkey=', start))
+	^self searchResults: (self class get: url, ('_all_docs?descending=true&startkey=', start))
 ]
 
 { #category : #'api - querying' }
 CouchDatabase >> reverseDocumentsFrom: start count: count [
-	^self searchResults: (self class get: address, ('_all_docs?descending=true&startkey=', start, '&count=', count))
+	^self searchResults: (self class get: url, ('_all_docs?descending=true&startkey=', start, '&count=', count))
 ]
 
 { #category : #'api - querying' }
 CouchDatabase >> reverseDocumentsFrom: start to: end [
-	^self searchResults: (self class get: address, ('_all_docs?descending=true&startkey=', start, '&endkey=', end))
+	^self searchResults: (self class get: url, ('_all_docs?descending=true&startkey=', start, '&endkey=', end))
 ]
 
 { #category : #'api - documents' }
@@ -138,7 +138,7 @@ CouchDatabase >> saveAll: aCollectionOfDocuments [
 	saveAll := (Dictionary new)
 				at: 'docs' put: aCollectionOfDocuments;
 				yourself.
-	response := self client post: address , '_bulk_docs' contents: saveAll.
+	response := self client post: url , '_bulk_docs' contents: saveAll.
 	response with: aCollectionOfDocuments
 		do: [:dictionary :document | document revision: (dictionary at: 'rev')].	"at: 'new_revs'"
 	^response

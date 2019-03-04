@@ -5,7 +5,6 @@ Class {
 		'document',
 		'name',
 		'mimeType',
-		'stub',
 		'contents'
 	],
 	#category : #'CouchDB-Core-CouchDB-Core'
@@ -15,7 +14,7 @@ Class {
 CouchAttachment class >> delete: aCouchAttachment [
 
 	self request: [ :zn |
-		zn url: aCouchAttachment address.
+		zn url: aCouchAttachment url.
 		zn headerAt: 'If-Match' put: aCouchAttachment  revision.
 		zn delete	
 	 ]
@@ -37,19 +36,13 @@ CouchAttachment class >> name: aString mimeType: mimeType in: aCouchDocument [
 CouchAttachment class >> save: aCouchAttachment [
 
 	self request: [ :zn |
-		zn url: aCouchAttachment address.
+		zn url: aCouchAttachment url.
 		zn headerAt: 'If-Match' put: aCouchAttachment document revision.
 		zn beBinary.
 		zn contents: aCouchAttachment contents.
 		zn contentType: aCouchAttachment mimeType.
 		zn put	
 	 ]
-]
-
-{ #category : #accessing }
-CouchAttachment >> address [
-
-	^address ifNil: [ address := self document address / self name ]
 ]
 
 { #category : #accessing }
@@ -70,7 +63,7 @@ CouchAttachment >> document [
 { #category : #initialization }
 CouchAttachment >> isStub [
 
-	^contents isNil
+	^false
 ]
 
 { #category : #accessing }
@@ -88,5 +81,12 @@ CouchAttachment >> setName: aString mimeType: aZnMimeType document: aCouchDocume
 
 	name := aString.
 	mimeType := aZnMimeType.
-	document := aCouchDocument
+	document := aCouchDocument.
+	self url.
+]
+
+{ #category : #accessing }
+CouchAttachment >> url [
+
+	^url ifNil: [ url := self document url / self name ]
 ]

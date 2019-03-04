@@ -2,19 +2,13 @@ Class {
 	#name : #CouchObject,
 	#superclass : #Object,
 	#instVars : [
-		'address'
+		'url'
 	],
 	#classVars : [
 		'logLevel'
 	],
 	#category : #'CouchDB-Core-CouchDB-Core'
 }
-
-{ #category : #'instance creation' }
-CouchObject class >> address: addressString [
-
-	^self new setAddress: addressString asZnUrl
-]
 
 { #category : #private }
 CouchObject class >> delete: uri [
@@ -114,25 +108,16 @@ CouchObject class >> request: aBlock [
 		do: [ :ex | CouchDBError new signal: ex description ]
 ]
 
-{ #category : #accessing }
-CouchObject >> address [
-	^address
-]
+{ #category : #'instance creation' }
+CouchObject class >> url: addressString [
 
-{ #category : #accessing }
-CouchObject >> address: anObject [
-	address := anObject asZnUrl
+	^self new setUrl: addressString asZnUrl
 ]
 
 { #category : #testing }
 CouchObject >> exists [
-	[self information] on: CouchDBError do: [:sig | ^false].
+	[self rawData] on: CouchDBError do: [:sig | ^false].
 	^true
-]
-
-{ #category : #api }
-CouchObject >> information [
-	^self class get: address
 ]
 
 { #category : #printing }
@@ -140,11 +125,26 @@ CouchObject >> printOn: aStream [
 	super printOn: aStream.
 	aStream
 		nextPutAll: ' (';
-		nextPutAll: address asString;
+		nextPutAll: url asString;
 		nextPut: $)
 ]
 
+{ #category : #api }
+CouchObject >> rawData [
+	^self class get: url
+]
+
 { #category : #accessing }
-CouchObject >> setAddress: aString [
-	address := aString
+CouchObject >> setUrl: aString [
+	url := aString
+]
+
+{ #category : #accessing }
+CouchObject >> url [
+	^url
+]
+
+{ #category : #accessing }
+CouchObject >> url: anObject [
+	url := anObject asZnUrl
 ]
