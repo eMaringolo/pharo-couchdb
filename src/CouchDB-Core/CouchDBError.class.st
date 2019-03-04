@@ -4,5 +4,5 @@ CouchDBError is raised whenever we get an error response from the CouchDB server
 Class {
 	#name : #CouchDBError,
 	#superclass : #Error,
-	#category : #CouchDB
+	#category : #'CouchDB-Core-CouchDB-Core'
 }

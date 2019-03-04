@@ -4,7 +4,7 @@ Database provides an interface to a database running on a CouchDB server.
 Class {
 	#name : #CouchDatabase,
 	#superclass : #CouchObject,
-	#category : #CouchDB
+	#category : #'CouchDB-Core-CouchDB-Core'
 }
 
 { #category : #'api - database' }
@@ -42,6 +42,11 @@ CouchDatabase >> createAll: aCollectionOfObjects [
 						yourself.
 			documents add: document].	"at: 'new_revs'"
 	^documents
+]
+
+{ #category : #'api - querying' }
+CouchDatabase >> delete [
+	^self class delete: self address
 ]
 
 { #category : #'api - views' }

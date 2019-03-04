@@ -1,6 +1,6 @@
 Extension { #name : #Integer }
 
-{ #category : #'*CouchDB' }
+{ #category : #'*CouchDB-Core' }
 Integer >> couchWriteOn: aStream [
 	self printOn: aStream 
 ]

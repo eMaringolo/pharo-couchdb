@@ -10,7 +10,7 @@ Class {
 		'design',
 		'name'
 	],
-	#category : #CouchDB
+	#category : #'CouchDB-Core-CouchDB-Core'
 }
 
 { #category : #accessing }
@@ -43,8 +43,8 @@ CouchView >> name: anObject [
 { #category : #private }
 CouchView >> searchResults: results [
 	^(results at: 'rows') collect: [:row |
-		CouchObjectDocument new
-			address: address, (row at: 'id');
+		CouchDocument new
+			address: address / (row at: 'id');
 			object: (row at: 'value') couchToObject;
 			yourself]
 ]

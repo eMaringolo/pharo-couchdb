@@ -8,7 +8,7 @@ Class {
 	#classVars : [
 		'Default'
 	],
-	#category : #CouchDB
+	#category : #'CouchDB-Core-CouchDB-Core'
 }
 
 { #category : #api }
@@ -31,7 +31,7 @@ CouchInterface >> databases [
 
 { #category : #api }
 CouchInterface >> delete: databaseName [
-	^self client delete: self address / databaseName
+	^self class delete: self address / databaseName
 ]
 
 { #category : #api }

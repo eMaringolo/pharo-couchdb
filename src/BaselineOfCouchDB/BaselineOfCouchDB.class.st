@@ -13,7 +13,12 @@ BaselineOfCouchDB >> baseline: spec [
 				baseline: 'NeoJSON'
 				with: [ spec repository: 'github://svenvc/NeoJSON/repository' ].
 			spec
-				package: #'CouchDB-Client'
+				package: #'CouchDB-Core'
 				with: [ spec requires: #('NeoJSON') ].
-			spec group: 'default' with: #(#'CouchDB-Client') ]
+			spec
+				package: #'CouchDB-Examples'
+				with: [ spec requires: #('CouchDB-Core') ].
+			spec group: 'default' with: #(#'CouchDB-Core' 'CouchDB-Examples').
+			spec group: 'core' with: #(#'CouchDB-Core').
+			 ]
 ]

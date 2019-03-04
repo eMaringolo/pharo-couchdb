@@ -1,6 +1,6 @@
 Extension { #name : #Boolean }
 
-{ #category : #'*CouchDB' }
+{ #category : #'*CouchDB-Core' }
 Boolean >> couchWriteOn: aStream [
 	self printOn: aStream
 ]

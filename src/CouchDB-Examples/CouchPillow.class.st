@@ -18,7 +18,7 @@ CouchPillow >> color: anObject [
 	color := anObject
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #'couchdb-mappings' }
 CouchPillow >> couchDocumentProperties [ 
 
 	^Dictionary new

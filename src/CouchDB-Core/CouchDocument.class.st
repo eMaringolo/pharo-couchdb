@@ -3,9 +3,10 @@ Class {
 	#superclass : #CouchObject,
 	#instVars : [
 		'revision',
-		'object'
+		'object',
+		'attachments'
 	],
-	#category : #CouchDB
+	#category : #'CouchDB-Core-CouchDB-Core'
 }
 
 { #category : #'instance creation' }
@@ -15,18 +16,11 @@ CouchDocument class >> with: anObject [
 		yourself
 ]
 
-{ #category : #'instance creation' }
-CouchDocument class >> writeAttachment: uri contentType: aString bytes: aByteArray [
-	^self request: [:client | 
-		| request |
-		request := (client requestClass put: uri).
-		request contentType: aString.
-		request doNotChunk.
-		request contentLength: aByteArray size.
-		request byteSource: aByteArray readStream.
-		client request: request.
-		client  executeAndGetResponse
-	]
+{ #category : #accessing }
+CouchDocument >> attachments [
+
+	^attachments ifNil: [ attachments := OrderedCollection new ].
+	
 ]
 
 { #category : #converting }
@@ -51,6 +45,15 @@ CouchDocument >> delete [
 	revision ifNil: [self refresh].
 	response := self class delete: (address copy queryAt: 'rev' put: revision).
 	revision := response at: 'rev'.
+	^response
+]
+
+{ #category : #attachments }
+CouchDocument >> deleteAttachement: aCouchAttachment [
+	| response |
+	revision ifNil: [self refresh].
+	response := CouchAttachment delete: aCouchAttachment .
+	revision := response at: '_rev'.
 	^response
 ]
 
@@ -90,6 +93,14 @@ CouchDocument >> refresh [
 	| response |
 	response := self information.
 	revision := response at: '_rev'.
+	attachments := Dictionary new.
+	(response includesKey: '_attachments')
+		ifTrue: [ 
+			 (response at: '_attachments') keysAndValuesDo: [ :key :value |
+				attachments at: key put: value 
+				 ]
+			].
+					
 	object := response couchToObject.
 	^response
 ]
@@ -117,16 +128,17 @@ CouchDocument >> save [
 	^response
 ]
 
+{ #category : #attachments }
+CouchDocument >> saveAttachment: aCouchAttachment [
+	| response |
+	revision ifNil: [self refresh].
+	response := CouchAttachment save: aCouchAttachment.
+	1 halt.
+	revision := response at: '_rev'.
+	^response
+]
+
 { #category : #'initialize-release' }
 CouchDocument >> undefined [
 	^ #_undefined
-]
-
-{ #category : #api }
-CouchDocument >> writeAttachment: nameString contentType: aString bytes: aByteArray [
-	| response |
-	revision ifNil: [self refresh].
-	response := self class writeAttachment: ((address asString, '/' , nameString) asUrl query: 'rev=', revision) contentType: aString bytes: aByteArray.
-	revision := response at: 'rev'.
-	^response
 ]

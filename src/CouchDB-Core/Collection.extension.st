@@ -1,6 +1,6 @@
 Extension { #name : #Collection }
 
-{ #category : #'*CouchDB' }
+{ #category : #'*CouchDB-Core' }
 Collection >> couchWriteOn: aStream [
 	aStream nextPut: $[.
 	self

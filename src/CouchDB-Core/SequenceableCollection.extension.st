@@ -1,6 +1,6 @@
 Extension { #name : #SequenceableCollection }
 
-{ #category : #'*CouchDB' }
+{ #category : #'*CouchDB-Core' }
 SequenceableCollection >> couchToObject [
 	^self collect: [:each | each couchToObject]
 ]

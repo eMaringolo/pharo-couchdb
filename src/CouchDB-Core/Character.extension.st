@@ -1,6 +1,6 @@
 Extension { #name : #Character }
 
-{ #category : #'*CouchDB' }
+{ #category : #'*CouchDB-Core' }
 Character >> couchWriteOn: aStream [
 
 	aStream nextPut: $".

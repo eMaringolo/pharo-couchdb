@@ -4,7 +4,10 @@ Class {
 	#instVars : [
 		'address'
 	],
-	#category : #CouchDB
+	#classVars : [
+		'logLevel'
+	],
+	#category : #'CouchDB-Core-CouchDB-Core'
 }
 
 { #category : #'instance creation' }
@@ -22,6 +25,29 @@ CouchObject class >> delete: uri [
 CouchObject class >> get: uriString [
 	^ self
 		request: [ :client | client get: uriString ]
+]
+
+{ #category : #logging }
+CouchObject class >> logLevel [
+	^ logLevel ifNil: [ logLevel := 0 ]
+]
+
+{ #category : #logging }
+CouchObject class >> logLevel: anInteger [
+
+	logLevel := anInteger
+]
+
+{ #category : #logging }
+CouchObject class >> loggingOff [
+
+	self logLevel: 0
+]
+
+{ #category : #logging }
+CouchObject class >> loggingOn [
+
+	self logLevel: 2
 ]
 
 { #category : #'instance creation' }
@@ -76,6 +102,10 @@ CouchObject class >> request: aBlock [
 		beOneShot;
 		accept: ZnMimeType applicationJson;
 		contentReader: [ :entity | NeoJSONReader fromString: entity readStream ].
+	self logLevel > 0
+		ifTrue: [ client
+				logLevel: self logLevel;
+				logToTranscript ].
 	^ [ response := aBlock value: client.
 	(response isArray not and: [ response includesKey: 'error' ])
 		ifTrue: [ CouchDBError new signal: (response at: 'reason') ]

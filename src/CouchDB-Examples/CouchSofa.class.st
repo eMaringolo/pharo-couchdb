@@ -13,14 +13,32 @@ CouchSofa class >> example1 [
 	| example |
 	example := self new.
 	example weight: 100.
-	4
-		timesRepeat: [ example pillows
-				add:
+	1 to: 4 do: [ :index |
+		example addPillow:
 					(CouchPillow new
 						size: 40;
-						color: Color white;
+						color: (#(#white #black) at: (index \\ 2)+1);
 						yourself) ].
 	^example
+]
+
+{ #category : #examples }
+CouchSofa class >> example2 [
+	| example |
+	example := self new.
+	example weight: 200.
+	1 to: 4 do: [ :index |
+		example addPillow:
+					(CouchPillow new
+						size: 40;
+						color: (#(#blue #orange) at: (index \\ 2)+1);
+						yourself) ].
+	^example
+]
+
+{ #category : #accessing }
+CouchSofa >> addPillow: aCouchPillow [
+	^self pillows add: aCouchPillow 
 ]
 
 { #category : #'as yet unclassified' }
