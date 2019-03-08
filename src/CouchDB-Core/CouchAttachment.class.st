@@ -38,7 +38,6 @@ CouchAttachment class >> save: aCouchAttachment [
 	self request: [ :zn |
 		zn url: aCouchAttachment url.
 		zn headerAt: 'If-Match' put: aCouchAttachment document revision.
-		zn beBinary.
 		zn contents: aCouchAttachment contents.
 		zn contentType: aCouchAttachment mimeType.
 		zn put	
