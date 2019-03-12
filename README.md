@@ -16,7 +16,7 @@ Metacello new
 ```
 
 # Server Installation
-Download CouchDB and install it (following the instructions in CouchDB website](https://couchdb.apache.org/#download). 
+Download CouchDB and install it [following the instructions in CouchDB website](https://couchdb.apache.org/#download). 
 
 If you install it using defaults, it will a create a default server running at `http://127.0.0.1:5984/` without authentication. All the exapmles will assume the server is running at that address and port.
 
