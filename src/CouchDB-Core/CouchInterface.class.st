@@ -13,7 +13,8 @@ Class {
 
 { #category : #api }
 CouchInterface >> create: databaseName [
-	^self class put: url / databaseName
+	self class put: url / databaseName.
+	^CouchDatabase url: url / databaseName
 ]
 
 { #category : #api }
