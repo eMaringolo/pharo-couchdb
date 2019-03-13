@@ -1,11 +1,12 @@
-# pharo-couchdb
+# Pharo CouchDB Client
+![CouchDB](couchdb-vertical-logo.png)
+
 This provides a basic Pharo client for [CouchDB NoSQL Document Database](https://couchdb.org) with support for basic JSON documents as well objects serialization/deserialization in JSON format.
 
-The source is based on an [old version](https://cwiki.apache.org/confluence/display/COUCHDB/Smalltalk) for VisualWorks, but this one uses [Zinc](https://github.com/svenvc/Zinc) HTTP client (`ZnClient`), URL objects (`ZnUrl`) instead of plain URL strings, has the `Couch` prefix for the class names (due to the lack of namespaces), and has other refactorings that I considered relevant (although there are many more to do).
+The source is based on an [old version](https://cwiki.apache.org/confluence/display/COUCHDB/Smalltalk) for VisualWorks, but this one uses [Zinc](https://github.com/svenvc/Zinc) HTTP client (`ZnClient`), URL objects (`ZnUrl`) instead of plain URL strings, has the `Couch` prefix for the class names (due to the lack of namespaces), and has other refactorings that I considered relevant (although there are many more to do). This version also supports document attachment operations using Base64 encoding for download.
 
-This version also supports document attachment operations using Base64 encoding for download.
+There are several pending features to be added to this client, if you have any issues please create an issue and/or send a pull request.
 
-![CouchDB](couchdb-vertical-logo.png)
 
 # Client Installation
 ```smalltalk
@@ -81,7 +82,10 @@ All documents can have attachments that will get versioned along the document it
 The contents are expected to be bytes, so encode and decode strings accordingly.
 
 ```smalltalk
-self saveAttachmentNamed: 'foo.txt' mimeType: ZnMimeType textPlain contents: 'This is a sample attachment' utf8encoded
+self 
+  saveAttachmentNamed: 'foo.txt'
+  mimeType: ZnMimeType textPlain
+  contents: 'This is a sample attachment' utf8encoded
 ```
 
 You can save an attachment with the same name as many times as you want, each time you save it it will increment the revision number of the document.
@@ -96,8 +100,36 @@ document attachments
 
 That will return a Dictionary whose keys will be the attachment names and instances of `CouchAttachmentStub` its values. You can send `#download` to an attachment stub to retrieve its full contents.
 
+## Mapping objects
 
-## Recommendations
+Although it is convenient to serialize/deserialize simple objects such as Dictionaries and Arrays into a JSON representation, the original implementation of the client devised a way to "map" objects to/from JSON using a few extra properties.
 
+If you have the `CouchDB-Examples` package loaded, you'll find the `CouchSofa` and `CouchPillow` example classes, these classes have nothing special, but serve as a reference of how to save/restore an object, with dependencies, from the database.
+
+```smalltalk
+database create: CouchSofa example1
+```
+
+This will create a regular JSON document for the body, but will add a `+class` property with the name of the Smalltalk class of the mapped object. 
+
+### How mapping works
+
+The basic classes such as `SequenceableCollection`, `Dictionary`, `String`, etc. know how to write themselves as JSON, but other classes must define what attributes must be mapped. This is achieved by means of the `couchDocumentProperties` method.
+
+```smalltalk
+CouchSofa>>#couchDocumentProperties 
+
+	^Dictionary new
+		at: 'weight' put: #weight;
+		at: 'pillows' put: #pillows;
+		yourself
+```
+
+This Dictionary defines a mapping between a key (that will be used as the property name when serialized as JSON) and a symbol that will work as a getter (sending `asMutator` to be used as setter). This of course could use some more advanced mapping technique or at least better accessors such as those in [Magritte](https://github.com/magritte-metamodel/magritte), but for the most part if works without issues.
+
+The `pillows` accessor returns a collection of `CouchPillow` instances, `CouchPillow` also defines `couchDocumentProperties`, otherwise the instances would be serialized as empty JSON objects and deserialized as empty Dictionaries.
+
+
+## Remarks
 Although this guide is small, it is suggested to use the GT Inspector to "dive" into each message send, because CouchDB objects works as containers in the following sequence "Server" -> "Database" -> "Document" -> "Attachment".
 
