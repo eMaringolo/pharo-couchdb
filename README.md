@@ -54,7 +54,15 @@ By default this CouchDB client sends the `#couchJson` message to objects to conv
 document := database create: { 'foo' -> true. 'baz' -> (1 to: 5) } asDictionary 
 ```
 
-This will return a `CouchDocument` that will contain a dynamically assigned `_id` and other information such as the `_rev` number.
+This will return a `CouchDocument` that will contain a dynamically assigned `_id` and other information such as the `_rev` number. And more importantly, you can can ask for the URL of the recently created document.
+
+```smalltalk
+document url "http://127.0.0.1:5984/pharodb/36557e332476cf324dd0bcc009005801"
+```
+
+Then you can copy that URL and paste it in your web browser of preference, and retrieve the contents of the document.
+
+Note: Even when all documents are stored as JSON, when served by CouchDB they are returned as `text/plain`.
 
 A `CouchDocument` works a wrapper for an object, which by default, as in our above example, is a `Dictionary`.
 
@@ -67,4 +75,29 @@ document save
 
 This will save the created document and also increment the revision number, which you can query by sending `#revision` to the document.
 
+### Document attachments
+
+All documents can have attachments that will get versioned along the document itself. You can add any file as attachment, you can do it directly by passing the file name, the MIME type and the contents, or by instantiating a `CouchAttachment` object.
+The contents are expected to be bytes, so encode and decode strings accordingly.
+
+```smalltalk
+self saveAttachmentNamed: 'foo.txt' mimeType: ZnMimeType textPlain contents: 'This is a sample attachment' utf8encoded
+```
+
+You can save an attachment with the same name as many times as you want, each time you save it it will increment the revision number of the document.
+
+Every time you query for a `CouchDocument` it will fetch the attached file, but will present them only as stubs without the content.
+
+So, following our example we could do:
+```smalltalk
+document := CouchDocument url: 'http://127.0.0.1:5984/pharodb/36557e332476cf324dd0bcc009005801'.
+document attachments
+```
+
+That will return a Dictionary whose keys will be the attachment names and instances of `CouchAttachmentStub` its values. You can send `#download` to an attachment stub to retrieve its full contents.
+
+
+## Recommendations
+
+Although this guide is small, it is suggested to use the GT Inspector to "dive" into each message send, because CouchDB objects works as containers in the following sequence "Server" -> "Database" -> "Document" -> "Attachment".
 
