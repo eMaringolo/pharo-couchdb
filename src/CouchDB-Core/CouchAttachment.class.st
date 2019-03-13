@@ -35,7 +35,7 @@ CouchAttachment class >> name: aString mimeType: mimeType in: aCouchDocument [
 { #category : #'instance creation' }
 CouchAttachment class >> save: aCouchAttachment [
 
-	self request: [ :zn |
+	 ^self request: [ :zn |
 		zn url: aCouchAttachment url.
 		zn headerAt: 'If-Match' put: aCouchAttachment document revision.
 		zn contents: aCouchAttachment contents.

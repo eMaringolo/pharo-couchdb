@@ -154,7 +154,7 @@ CouchDocument >> saveAttachment: aCouchAttachment [
 	| response |
 	revision ifNil: [self refresh].
 	response := CouchAttachment save: aCouchAttachment.
-	revision := response at: '_rev'.
+	revision := response at: 'rev'.
 	^response
 ]
 
