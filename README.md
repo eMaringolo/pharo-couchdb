@@ -1,11 +1,12 @@
 # Pharo CouchDB Client
 ![CouchDB](couchdb-vertical-logo.png)
 
-This provides a basic Pharo client for [CouchDB NoSQL Document Database](https://couchdb.org) with support for basic JSON documents as well objects serialization/deserialization in JSON format.
+This provides a lightweight Pharo client for [CouchDB NoSQL Document Database](https://couchdb.org) with support for basic JSON documents as well objects serialization/deserialization in JSON format.
 
 The source is based on an [old version](https://cwiki.apache.org/confluence/display/COUCHDB/Smalltalk) for VisualWorks, but this one uses [Zinc](https://github.com/svenvc/Zinc) HTTP client (`ZnClient`), URL objects (`ZnUrl`) instead of plain URL strings, has the `Couch` prefix for the class names (due to the lack of namespaces), and has other refactorings that I considered relevant (although there are many more to do). This version also supports document attachment operations using Base64 encoding for download.
 
 There are several pending features to be added to this client, if you have any issues please create an issue and/or send a pull request.
+Or if you need a full-featured, including a native View Server and App Contexts you can use the [SCouchDB Client](https://github.com/jmari/SCouchDB).
 
 
 # Client Installation
